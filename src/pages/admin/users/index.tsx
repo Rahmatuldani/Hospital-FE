@@ -2,28 +2,30 @@ import { Button, Card, Col, Container, Dropdown, Form, InputGroup, Pagination, R
 import { FaUserDoctor } from 'react-icons/fa6';
 import { UserType } from "../../../store/users/types";
 import React from "react";
-import Alert from "../../../utils/alert";
 import { FaSearch, FaSort } from "react-icons/fa";
 import useState from "../../../hooks/useState";
 import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import UserDetail from "./detail";
+import { useSelector } from "react-redux";
+import { selectUsers, selectUsersError, selectUsersIsLoading, selectUsersPageCount } from "../../../store/users/selector";
+import { ErrorHandler } from "../../../utils/errorHandler";
+import { useDispatch } from "react-redux";
+import { fetchUsersStart } from "../../../store/users/action";
 
 function Users() {
-    const users: UserType[] | null = [
-        {
-            _id: '12345',
-            uid: '12345',
-            name: 'Administrator',
-            role: 'Administrator',
-            phone: '08990929826',
-        }
-    ];
-    const isLoading: boolean = false;
-    const totalPage: number = 8;
+    const users: UserType[] = useSelector(selectUsers);
+    const isLoading: boolean = useSelector(selectUsersIsLoading);
+    const pageCount: number = useSelector(selectUsersPageCount);
+
     const [show, setShow] = useState('10');
     const [page, setPage] = useState<number>(1);
-    const pageCount = totalPage;
     const pagination: JSX.Element[] = [];
+    for (let i = 1; i < pageCount + 1; i++) {
+        pagination.push(
+            <Pagination.Item key={i} active={page === i} onClick={() => setPage(i)}>{i}</Pagination.Item>
+        );
+    }
+
     const columns: { key: keyof UserType, label: string}[] = [
         { key: 'uid', label: 'UID'},
         { key: 'name', label: 'Name'},
@@ -32,22 +34,19 @@ function Users() {
         { key: 'phone', label: 'Phone'},
     ];
 
-    for (let i = 1; i < pageCount + 1; i++) {
-        pagination.push(
-            <Pagination.Item key={i} active={page === i} onClick={() => setPage(i)}>{i}</Pagination.Item>
-        );
-    }
-
     function handleDelete(id: string) {
         console.log(id);
     }
 
-    const error: string | null = null;
+    const error = useSelector(selectUsersError);
     React.useEffect(() => {
-        if (error) {
-            Alert({ icon: 'error', title: 'Error', text: error });
-        }
+        ErrorHandler(error);
     }, [error]);
+    
+    const dispatch = useDispatch();
+    React.useEffect(() => {
+        dispatch(fetchUsersStart({}));
+    }, [dispatch]);
 
     return (
         <main>
@@ -121,7 +120,7 @@ function Users() {
                                             <Spinner animation="border" variant="primary" />
                                         </td>
                                     </tr>
-                                ) : !users ? (
+                                ) : users.length <= 0 ? (
                                     <tr>
                                         <td colSpan={columns.length + 1} className="text-center">
                                             Data Not Found

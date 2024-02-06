@@ -1,3 +1,9 @@
+export enum USERS_ACTION_TYPES {
+    FETCH_USERS_START = 'users/FETCH_USERS_START',
+    FETCH_USERS_SUCCESS = 'users/FETCH_USERS_SUCCESS',
+    FETCH_USERS_FAILED = 'users/FETCH_USERS_FAILED',
+}
+
 export type UserType = {
     _id: string;
     uid: string;
