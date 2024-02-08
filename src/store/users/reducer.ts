@@ -1,13 +1,13 @@
 import { AnyAction } from "redux";
 import { UserType } from "./types";
-import { fetchUsersFailed, fetchUsersStart, fetchUsersSuccess } from "./action";
-import { AxiosResponse } from "axios";
+import { createUserFailed, createUserStart, deleteUserFailed, deleteUserStart, fetchUsersFailed, fetchUsersStart, fetchUsersSuccess } from "./action";
+import { ServerResponse } from "../../config/types";
 
 export type UsersState = {
     readonly users: UserType[];
     readonly pageCount: number;
     readonly isLoading: boolean;
-    readonly error: Error | AxiosResponse | string | null;
+    readonly error: Error | ServerResponse | string | null;
 }
 
 export const USERS_INITIAL_STATE: UsersState = {
@@ -22,7 +22,9 @@ export function usersReducer(
     action: AnyAction
 ): UsersState {
     if (
-        fetchUsersStart.match(action)
+        fetchUsersStart.match(action) ||
+        createUserStart.match(action) ||
+        deleteUserStart.match(action)
     ) {
         return {...state, isLoading: true};
     }
@@ -32,7 +34,9 @@ export function usersReducer(
         return {...state, isLoading: false, users: action.payload.users, pageCount: action.payload.pageCount, error: null};
     }
     if (
-        fetchUsersFailed.match(action)
+        fetchUsersFailed.match(action) ||
+        createUserFailed.match(action) ||
+        deleteUserFailed.match(action)
     ) {
         return {...state, isLoading: false, error: action.payload};
     }

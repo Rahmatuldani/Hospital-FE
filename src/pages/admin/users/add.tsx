@@ -8,28 +8,28 @@ import {
     Row
 } from "react-bootstrap";
 import { FaUserDoctor } from 'react-icons/fa6';
-import Alert from "../../../utils/alert";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Polyclinic, UserRole, UserType } from "../../../store/users/types";
+import { useDispatch } from "react-redux";
+import { createUserStart } from "../../../store/users/action";
+import { useSelector } from "react-redux";
+import { selectUsersError } from "../../../store/users/selector";
+import { ErrorHandler } from "../../../utils/errorHandler";
 
 function UserAdd() {
     const { register, handleSubmit, formState: { errors } } = useForm<UserType>();
+    const dispatch = useDispatch();
 
     const onSubmit: SubmitHandler<UserType> = (data): void => {
-        if (data.email === '') {
-            delete data.email;
-        }
         if (data.polyclinic === '') {
             delete data.polyclinic;
         }
-        console.log(data);
+        dispatch(createUserStart(data));
     };
 
-    const error: string | null = null;
+    const error = useSelector(selectUsersError);
     React.useEffect(() => {
-        if (error) {
-            Alert({ icon: 'error', title: 'Error', text: error });
-        }
+        ErrorHandler(error);
     }, [error]);
 
     return (
@@ -56,10 +56,10 @@ function UserAdd() {
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Card.Body>
                             <Row className="mb-3">
-                                <Form.Group as={Col} controlId="formUid">
-                                    <Form.Label>UID</Form.Label>
-                                    <Form.Control placeholder="Input UID" {...register('uid', { required: 'UID is required' })} />
-                                    {errors.uid && <span className="text-danger">{errors.uid.message}</span>}
+                                <Form.Group as={Col} controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control type="email" placeholder="Input Email" {...register('email', { required: 'Email is required' })} />
+                                    {errors.email && <span className="text-danger">{errors.email.message}</span>}
                                 </Form.Group>
                                 <Form.Group as={Col} controlId="formName">
                                     <Form.Label>Name</Form.Label>
@@ -89,10 +89,6 @@ function UserAdd() {
                                 </Form.Group>
                             </Row>
                             <Row className="mb-3">
-                                <Form.Group as={Col} controlId="formEmail">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control type="email" placeholder="Input Email" {...register('email')} />
-                                </Form.Group>
                                 <Form.Group as={Col} controlId="formPhone">
                                     <Form.Label>Phone</Form.Label>
                                     <Form.Control placeholder="Input Phone" {...register('phone', { required: 'Phone is required' })} />

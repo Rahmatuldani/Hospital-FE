@@ -10,12 +10,14 @@ import { useSelector } from "react-redux";
 import { selectUsers, selectUsersError, selectUsersIsLoading, selectUsersPageCount } from "../../../store/users/selector";
 import { ErrorHandler } from "../../../utils/errorHandler";
 import { useDispatch } from "react-redux";
-import { fetchUsersStart } from "../../../store/users/action";
+import { deleteUserStart, fetchUsersStart } from "../../../store/users/action";
+import Alert from "../../../utils/alert";
 
 function Users() {
     const users: UserType[] = useSelector(selectUsers);
     const isLoading: boolean = useSelector(selectUsersIsLoading);
     const pageCount: number = useSelector(selectUsersPageCount);
+    const dispatch = useDispatch();
 
     const [show, setShow] = useState('10');
     const [page, setPage] = useState<number>(1);
@@ -27,15 +29,20 @@ function Users() {
     }
 
     const columns: { key: keyof UserType, label: string}[] = [
-        { key: 'uid', label: 'UID'},
+        { key: 'email', label: 'Email'},
         { key: 'name', label: 'Name'},
         { key: 'role', label: 'Role'},
         { key: 'polyclinic', label: 'Polyclinic'},
         { key: 'phone', label: 'Phone'},
     ];
 
-    function handleDelete(id: string) {
-        console.log(id);
+    function handleDelete(id: string, name: string) {
+        Alert({ title: 'Delete user', text: `Are you sure to delete ${name}?`, icon: 'warning', cancelButton: true, confirmText: 'Delete' })
+        .then((result) => {
+            if (result.isConfirmed) {
+                dispatch(deleteUserStart(id));
+            }
+        });
     }
 
     const error = useSelector(selectUsersError);
@@ -43,7 +50,6 @@ function Users() {
         ErrorHandler(error);
     }, [error]);
     
-    const dispatch = useDispatch();
     React.useEffect(() => {
         dispatch(fetchUsersStart({}));
     }, [dispatch]);
@@ -144,7 +150,7 @@ function Users() {
 
                                                 <Dropdown.Menu className='py-2' style={{ minWidth: '150px' }}>
                                                     <UserDetail user={row}/>
-                                                    <Dropdown.Item href="#!" onClick={() => handleDelete(row._id)}>
+                                                    <Dropdown.Item href="#!" onClick={() => handleDelete(row._id, row.name)}>
                                                         <div className="dropdown-item-icon">
                                                             <FiTrash2 />
                                                         </div>

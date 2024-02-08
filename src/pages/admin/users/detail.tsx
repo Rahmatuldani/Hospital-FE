@@ -9,13 +9,13 @@ interface DetailProps {
 
 function UserDetail({ user }: DetailProps) {
     const [show, setShow] = useState(false);
-    
+
 
     return (
         <>
             <button className="dropdown-item" onClick={() => setShow(true)}>
                 <div className='dropdown-item-icon'>
-                    <FaClipboardList/>
+                    <FaClipboardList />
                 </div>
                 Detail
             </button>
@@ -24,12 +24,12 @@ function UserDetail({ user }: DetailProps) {
                 <Modal.Header closeButton>User Detail</Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group as={Row} controlId='medicalRecord'>
+                        <Form.Group as={Row} controlId='email'>
                             <Form.Label column sm='4'>
-                                UID
+                                Email
                             </Form.Label>
                             <Col sm='8'>
-                                <Form.Control plaintext readOnly defaultValue={user._id} />
+                                <Form.Control plaintext readOnly defaultValue={user.email ?? '-'} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId='name'>
@@ -54,14 +54,6 @@ function UserDetail({ user }: DetailProps) {
                             </Form.Label>
                             <Col sm='8'>
                                 <Form.Control plaintext readOnly defaultValue={user.polyclinic ?? '-'} />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} controlId='email'>
-                            <Form.Label column sm='4'>
-                                Email
-                            </Form.Label>
-                            <Col sm='8'>
-                                <Form.Control plaintext readOnly defaultValue={user.email ?? '-'} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId='phone'>
