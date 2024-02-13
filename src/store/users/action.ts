@@ -7,9 +7,15 @@ type FetchUsers = {
     pageCount: number;
 }
 
-type FetchOptions = {
+export type FetchOptions = {
     search?: string,
-    page?: string
+    page?: number,
+    limit?: string,
+}
+
+export type UpdateOptions = {
+    id: string,
+    user: UserType,
 }
 
 // Fetch Session
@@ -40,6 +46,18 @@ export const createUserFailed = withMatcher(
     (error: Error | ServerResponse | string ): CreateUsersFailed => createAction(USERS_ACTION_TYPES.CREATE_USER_FAILED, error)
 );
 // End Create Section
+
+// Update Section
+export type UpdateUserStart = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_START, UpdateOptions>;
+export type UpdateUserFailed = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_FAILED, Error | ServerResponse | string >;
+
+export const updateUserStart = withMatcher(
+    (data: UpdateOptions): UpdateUserStart => createAction(USERS_ACTION_TYPES.UPDATE_USER_START, data)
+);
+export const updateUserFailed = withMatcher(
+    (error: Error | ServerResponse | string ): UpdateUserFailed => createAction(USERS_ACTION_TYPES.UPDATE_USER_FAILED, error)
+);
+// End Update Section
 
 // Delete Section
 export type DeleteUserStart = ActionWithPayload<USERS_ACTION_TYPES.DELETE_USER_START, string>;

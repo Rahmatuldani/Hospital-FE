@@ -1,8 +1,8 @@
-import { Button, Card, Col, Container, Dropdown, Form, InputGroup, Pagination, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Card, Col, Container, Dropdown, Form, Pagination, Row, Spinner, Table } from "react-bootstrap";
 import { FaUserDoctor } from 'react-icons/fa6';
 import { UserType } from "../../../store/users/types";
 import React from "react";
-import { FaSearch, FaSort } from "react-icons/fa";
+import {  FaSort } from "react-icons/fa";
 import useState from "../../../hooks/useState";
 import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import UserDetail from "./detail";
@@ -12,6 +12,7 @@ import { ErrorHandler } from "../../../utils/errorHandler";
 import { useDispatch } from "react-redux";
 import { deleteUserStart, fetchUsersStart } from "../../../store/users/action";
 import Alert from "../../../utils/alert";
+import UserEdit from "./edit";
 
 function Users() {
     const users: UserType[] = useSelector(selectUsers);
@@ -19,7 +20,8 @@ function Users() {
     const pageCount: number = useSelector(selectUsersPageCount);
     const dispatch = useDispatch();
 
-    const [show, setShow] = useState('10');
+    const [limit, setLimit] = useState('10');
+    const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState<number>(1);
     const pagination: JSX.Element[] = [];
     for (let i = 1; i < pageCount + 1; i++) {
@@ -28,31 +30,31 @@ function Users() {
         );
     }
 
-    const columns: { key: keyof UserType, label: string}[] = [
-        { key: 'email', label: 'Email'},
-        { key: 'name', label: 'Name'},
-        { key: 'role', label: 'Role'},
-        { key: 'polyclinic', label: 'Polyclinic'},
-        { key: 'phone', label: 'Phone'},
+    const columns: { key: keyof UserType, label: string }[] = [
+        { key: 'email', label: 'Email' },
+        { key: 'name', label: 'Name' },
+        { key: 'role', label: 'Role' },
+        { key: 'polyclinic', label: 'Polyclinic' },
+        { key: 'phone', label: 'Phone' },
     ];
 
     function handleDelete(id: string, name: string) {
         Alert({ title: 'Delete user', text: `Are you sure to delete ${name}?`, icon: 'warning', cancelButton: true, confirmText: 'Delete' })
-        .then((result) => {
-            if (result.isConfirmed) {
-                dispatch(deleteUserStart(id));
-            }
-        });
+            .then((result) => {
+                if (result.isConfirmed) {
+                    dispatch(deleteUserStart(id));
+                }
+            });
     }
 
     const error = useSelector(selectUsersError);
     React.useEffect(() => {
         ErrorHandler(error);
     }, [error]);
-    
+
     React.useEffect(() => {
-        dispatch(fetchUsersStart({}));
-    }, [dispatch]);
+        dispatch(fetchUsersStart({ page, limit, search }));
+    }, [dispatch, page, limit, search]);
 
     return (
         <main>
@@ -81,7 +83,7 @@ function Users() {
                                 <Form.Group as={Row} controlId="showData">
                                     <Form.Label column sm='2'>Show</Form.Label>
                                     <Col sm='3'>
-                                        <Form.Select aria-label="showData" value={show} onChange={(e) => setShow(e.target.value)}>
+                                        <Form.Select aria-label="showData" value={limit} onChange={(e) => setLimit(e.target.value)}>
                                             <option value='10'>10</option>
                                             <option value='25'>25</option>
                                             <option value='50'>50</option>
@@ -91,21 +93,21 @@ function Users() {
                                 </Form.Group>
                             </Col>
                             <Col>
-                                <InputGroup>
-                                    <Form.Control
-                                        placeholder="Search"
-                                        aria-label="Search"
-                                        aria-describedby="search"
-                                    />
-                                    <Button variant="outline-success"><FaSearch /></Button>
-                                </InputGroup></Col>
+                                <Form.Control
+                                    placeholder="Search by email, name, role, or polyclinic"
+                                    aria-label="Search"
+                                    aria-describedby="search"
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </Col>
                         </Row>
-                        <Table striped bordered hover>
+                        <Table striped bordered hover responsive>
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     {columns.map((column) => (
                                         <th key={column.key}>{column.label}
-                                            <Button variant="icon" className="btn-transparent btn-datatable ms-1" type="button"><FaSort/></Button>
+                                            <Button variant="icon" className="btn-transparent btn-datatable ms-1" type="button"><FaSort /></Button>
                                         </th>
                                     ))}
                                     <th>Action</th>
@@ -113,6 +115,7 @@ function Users() {
                             </thead>
                             <tfoot>
                                 <tr>
+                                    <th>No</th>
                                     {columns.map((column) => (
                                         <th key={column.key}>{column.label}</th>
                                     ))}
@@ -122,18 +125,19 @@ function Users() {
                             <tbody>
                                 {isLoading ? (
                                     <tr>
-                                        <td colSpan={columns.length + 1} className="text-center">
+                                        <td colSpan={columns.length + 2} className="text-center">
                                             <Spinner animation="border" variant="primary" />
                                         </td>
                                     </tr>
                                 ) : users.length <= 0 ? (
                                     <tr>
-                                        <td colSpan={columns.length + 1} className="text-center">
+                                        <td colSpan={columns.length + 2} className="text-center">
                                             Data Not Found
                                         </td>
                                     </tr>
                                 ) : users.map((row, i) => (
                                     <tr key={i}>
+                                        <td>{i+1}</td>
                                         {columns.map((column) => (
                                             <td key={column.key}>{row[column.key] ?? '-'}</td>
                                         ))}
@@ -149,7 +153,8 @@ function Users() {
                                                 </Dropdown.Toggle>
 
                                                 <Dropdown.Menu className='py-2' style={{ minWidth: '150px' }}>
-                                                    <UserDetail user={row}/>
+                                                    <UserDetail user={row} />
+                                                    <UserEdit user={row}/>
                                                     <Dropdown.Item href="#!" onClick={() => handleDelete(row._id, row.name)}>
                                                         <div className="dropdown-item-icon">
                                                             <FiTrash2 />

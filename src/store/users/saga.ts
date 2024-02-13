@@ -1,14 +1,14 @@
 import { all, call, put, takeLatest } from "typed-redux-saga";
 import { USERS_ACTION_TYPES, UserType } from "./types";
-import { createUserFailed, deleteUserFailed, fetchUsersFailed, fetchUsersSuccess } from "./action";
+import { FetchOptions, UpdateOptions, createUserFailed, deleteUserFailed, fetchUsersFailed, fetchUsersSuccess, updateUserFailed } from "./action";
 import { isAxiosError } from "../../utils/typeCheck";
 import userApi from "../../api/user";
 import Alert from "../../utils/alert";
 import { ServerResponse } from "../../config/types";
 
-export function* fetchUsersAsync() {
+export function* fetchUsersAsync(action?: {type: string, payload: FetchOptions}) {
     try {
-        const [status, response] = yield* call(userApi.getAllUsers);
+        const [status, response] = yield* call(userApi.getAllUsers, action?.payload);
         switch (status) {
             case 200:
                 return yield* put(fetchUsersSuccess({pageCount: response.data.pageCount, users: response.data.users}));
@@ -51,6 +51,29 @@ export function* createUserAsync(action: { type: string, payload: UserType}) {
     }
 }
 
+export function* updateUserAsync(action: { type: string, payload: UpdateOptions }) {
+    try {
+        const [status, response] = yield* call(userApi.updateUser, action.payload);
+        switch (status) {
+            case 200:
+                Alert({ title: 'Succes', text: 'Update user success', icon: 'success'});
+                return yield* call(fetchUsersAsync);
+        
+            default:
+                return yield* put(updateUserFailed(response.data.errors));
+                
+        }
+    } catch (error) {
+        if (isAxiosError(error)) {
+            if(error.response !== undefined) {
+                return yield* put(updateUserFailed(error.response.data as ServerResponse));
+            }
+            return yield* put(updateUserFailed(error.message));
+        }
+        return yield* put(updateUserFailed(error as Error));
+    }
+}
+
 export function* deleteUserAsync(action: {type: string, payload: string}) {
     try {
         const [status, response] = yield* call(userApi.deleteUser, action.payload);
@@ -88,6 +111,13 @@ export function* onCreateUser() {
     );
 }
 
+export function* onUpdateUser() {
+    yield* takeLatest(
+        USERS_ACTION_TYPES.UPDATE_USER_START,
+        updateUserAsync
+    );
+}
+
 export function* onDeleteUser() {
     yield* takeLatest(
         USERS_ACTION_TYPES.DELETE_USER_START,
@@ -99,6 +129,7 @@ export function* usersSaga() {
     yield* all([
         call(onFetchUsers),
         call(onCreateUser),
+        call(onUpdateUser),
         call(onDeleteUser),
     ]);
 }

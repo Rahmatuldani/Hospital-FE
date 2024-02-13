@@ -1,6 +1,16 @@
 import { AnyAction } from "redux";
 import { UserType } from "./types";
-import { createUserFailed, createUserStart, deleteUserFailed, deleteUserStart, fetchUsersFailed, fetchUsersStart, fetchUsersSuccess } from "./action";
+import { 
+    createUserFailed, 
+    createUserStart, 
+    deleteUserFailed, 
+    deleteUserStart, 
+    fetchUsersFailed, 
+    fetchUsersStart, 
+    fetchUsersSuccess, 
+    updateUserFailed, 
+    updateUserStart
+} from "./action";
 import { ServerResponse } from "../../config/types";
 
 export type UsersState = {
@@ -24,6 +34,7 @@ export function usersReducer(
     if (
         fetchUsersStart.match(action) ||
         createUserStart.match(action) ||
+        updateUserStart.match(action) ||
         deleteUserStart.match(action)
     ) {
         return {...state, isLoading: true};
@@ -36,6 +47,7 @@ export function usersReducer(
     if (
         fetchUsersFailed.match(action) ||
         createUserFailed.match(action) ||
+        updateUserFailed.match(action) ||
         deleteUserFailed.match(action)
     ) {
         return {...state, isLoading: false, error: action.payload};

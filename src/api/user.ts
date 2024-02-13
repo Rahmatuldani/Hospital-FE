@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import app from "../config/app";
 import { UserType } from "../store/users/types";
+import { UpdateOptions } from "../store/users/action";
 
 const userApi = (() => {
     const server: AxiosInstance = axios.create({
@@ -10,13 +11,18 @@ const userApi = (() => {
         }
     });
 
-    async function getAllUsers() {
-        const result = await server.get('/');
+    async function getAllUsers(search?: object) {
+        const result = await server.get('/', { params: search });
         return [result.status, result.data];
     }
     
     async function createUser(user: UserType) {
         const result = await server.post('/', user);
+        return [result.status, result.data];
+    }
+    
+    async function updateUser(data: UpdateOptions) {
+        const result = await server.put(`/${data.id}`, data.user);
         return [result.status, result.data];
     }
     
@@ -30,6 +36,7 @@ const userApi = (() => {
     return {
         getAllUsers,
         createUser,
+        updateUser,
         deleteUser
     };
 })();
