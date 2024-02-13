@@ -32,7 +32,6 @@ export const fetchUsersSuccess = withMatcher(
 export const fetchUsersFailed = withMatcher(
     (error: Error | ServerResponse | string ): FetchUsersFailed => createAction(USERS_ACTION_TYPES.FETCH_USERS_FAILED, error)
 );
-
 // End Fetch Session
 
 // Create Section

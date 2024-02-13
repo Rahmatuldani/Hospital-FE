@@ -7,6 +7,16 @@ function ObjectToQueryString(obj: Record<string, any>): string {
     return result;
 }
 
+function dateToString(date: string): string {
+    const result = new Date(date).toLocaleDateString('en-us', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    return result;
+}
+
 export {
-    ObjectToQueryString
+    ObjectToQueryString,
+    dateToString
 };
