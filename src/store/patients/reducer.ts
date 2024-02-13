@@ -5,6 +5,12 @@ import {
     createPatientFailed, 
     createPatientStart, 
     createPatientSuccess, 
+    deletePatientFailed, 
+    deletePatientStart, 
+    deletePatientSuccess, 
+    editPatientFailed, 
+    editPatientStart, 
+    editPatientSuccess, 
     fetchPatientsFailed, 
     fetchPatientsStart, 
     fetchPatientsSuccess 
@@ -28,7 +34,9 @@ export function patientReducer(
 ): PatientsState {
     if (
         fetchPatientsStart.match(action) ||
-        createPatientStart.match(action)
+        createPatientStart.match(action) ||
+        editPatientStart.match(action) ||
+        deletePatientStart.match(action) 
     ) {
         return {...state, isLoading: true};
     }
@@ -39,10 +47,25 @@ export function patientReducer(
     if (createPatientSuccess.match(action)) {
         return {...state, isLoading: false, patients: [...state.patients, action.payload], error: null};
     }
+    if (editPatientSuccess.match(action)) {
+        const updatePatients = state.patients.map((patient) => {
+            if (patient._id === action.payload._id) {
+                return action.payload;
+            }
+            return patient;
+        });
+        return {...state, isLoading: false, patients: updatePatients, error: null};
+    }
+    if (deletePatientSuccess.match(action)) {
+        const newPatient = state.patients.filter(patient => patient._id !== action.payload);
+        return {...state, isLoading: false, patients: newPatient, error: null};
+    }
 
     if (
         fetchPatientsFailed.match(action) ||
-        createPatientFailed.match(action)
+        createPatientFailed.match(action) ||
+        editPatientFailed.match(action) ||
+        deletePatientFailed.match(action)
     ) {
         return {...state, isLoading: false, error: action.payload};
     }

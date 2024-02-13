@@ -8,7 +8,7 @@ function ObjectToQueryString(obj: Record<string, any>): string {
 }
 
 function dateToString(date: string): string {
-    const result = new Date(date).toLocaleDateString('en-us', {
+    const result = new Date(date).toLocaleDateString('id-ID', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'

@@ -10,19 +10,33 @@ const patientApi = (() => {
         }
     });
 
-    async function readAll() {
+    async function readAllPatient() {
         const result = await server.get('/');
         return [result.status, result.data];
     }
     
-    async function create(user: PatientType) {
-        const result = await server.post('/', user);
+    async function createPatient(patient: PatientType) {
+        const result = await server.post('/', patient);
+        return [result.status, result.data];
+    }
+
+    async function updatePatient(patient: PatientType) {
+        console.log(patient);
+        
+        const result = await server.put(`/${patient._id}`, patient);
+        return [result.status, result.data];
+    }
+    
+    async function deletePatient(id: string) {
+        const result = await server.delete(`/${id}`);
         return [result.status, result.data];
     }
 
     return {
-        readAll,
-        create
+        readAllPatient,
+        createPatient,
+        updatePatient,
+        deletePatient,
     };
 })();
 

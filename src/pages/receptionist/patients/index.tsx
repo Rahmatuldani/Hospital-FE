@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Card, Col, Container, Dropdown, Form, Row, Spinner } from "react-bootstrap";
-import { FaSort, FaUserInjured } from "react-icons/fa";
+import { Button, Card, Col, Container, Form, OverlayTrigger, Row, Spinner, Tooltip } from "react-bootstrap";
+import { FaSortDown, FaUserInjured } from "react-icons/fa";
 import { PatientType } from "../../../store/patients/types";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { fetchPatientsStart } from "../../../store/patients/action";
-import { selectPatients, selectPatientsIsLoading } from "../../../store/patients/selector";
+import { deletePatientStart, fetchPatientsStart } from "../../../store/patients/action";
+import { selectPatients, selectPatientsError, selectPatientsIsLoading } from "../../../store/patients/selector";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import Alert from "../../../utils/alert";
 import useState from "../../../hooks/useState";
 import { dateToString } from "../../../utils/convert";
+import PatientDetail from "./detail";
+import { ErrorHandler } from "../../../utils/errorHandler";
+import PatientEdit from "./edit";
 
 function Patient() {
     const patients: PatientType[] = useSelector(selectPatients);
@@ -25,8 +28,18 @@ function Patient() {
     }, [dispatch]);
 
     function handleDelete(patient: PatientType) {
-        Alert({ title: 'Delete user', text: `Are you sure to delete ${patient.name}?`, icon: 'warning', cancelButton: true, confirmText: 'Delete' });
+        Alert({ title: 'Delete user', text: `Are you sure to delete ${patient.name}?`, icon: 'warning', cancelButton: true, confirmText: 'Delete' })
+            .then(result => {
+                if (result.isConfirmed) {
+                    dispatch(deletePatientStart(patient._id));
+                }
+            });
     }
+
+    const error = useSelector(selectPatientsError);
+    React.useEffect(() => {
+        ErrorHandler(error);
+    }, [error]);
 
     const columns: TableColumn<PatientType>[] = [
         {
@@ -47,30 +60,26 @@ function Patient() {
         },
         {
             name: 'BPJS',
-            selector: row => row.bpjs ?? 'None',
+            selector: row => row.bpjs ?? '-',
             sortable: true
         },
         {
             name: 'Action',
             cell: (row) => (
-                <Dropdown className="no-caret dropdown-notifications">
-                    <Dropdown.Toggle
-                        variant="icon"
-                        className="btn-transparent-dark btn-datatable"
-                        id="notification-dropdown"
-                        aria-haspopup="true"
+                <div className="d-flex gap-1">
+                    <PatientDetail patient={row} />
+                    <PatientEdit patient={row} />
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={
+                            <Tooltip id="deleteTooltip">Delete</Tooltip>
+                        }
                     >
-                        <FiMoreVertical />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu className='py-2' style={{ minWidth: '150px' }}>
-                        <Dropdown.Item href="#!" onClick={() => handleDelete(row)}>
-                            <div className="dropdown-item-icon">
-                                <FiTrash2 />
-                            </div>
-                            Delete
-                        </Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                        <Button variant="icon" className="btn-transparent-dark btn-datatable" onClick={() => handleDelete(row)}>
+                            <FiTrash2/>
+                        </Button>
+                    </OverlayTrigger>
+                </div>
             )
         },
     ];
@@ -112,7 +121,7 @@ function Patient() {
                                 columns={columns}
                                 data={filterPatients}
                                 pagination
-                                sortIcon={<FaSort />}
+                                sortIcon={<FaSortDown />}
                                 responsive
                                 striped
                                 highlightOnHover

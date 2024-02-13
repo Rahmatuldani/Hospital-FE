@@ -24,12 +24,44 @@ export type CreatePatientSuccess = ActionWithPayload<PATIENTS_ACTION_TYPES.CREAT
 export type CreatePatientFailed = ActionWithPayload<PATIENTS_ACTION_TYPES.CREATE_PATIENT_FAILED, Error | ServerResponse | string >;
 
 export const createPatientStart = withMatcher(
-    (user: PatientType): CreatePatientStart => createAction(PATIENTS_ACTION_TYPES.CREATE_PATIENT_START, user)
+    (patient: PatientType): CreatePatientStart => createAction(PATIENTS_ACTION_TYPES.CREATE_PATIENT_START, patient)
 );
 export const createPatientSuccess = withMatcher(
-    (patients: PatientType): CreatePatientSuccess => createAction(PATIENTS_ACTION_TYPES.CREATE_PATIENT_SUCCESS, patients)
+    (patient: PatientType): CreatePatientSuccess => createAction(PATIENTS_ACTION_TYPES.CREATE_PATIENT_SUCCESS, patient)
 );
 export const createPatientFailed = withMatcher(
     (error: Error | ServerResponse | string ): CreatePatientFailed => createAction(PATIENTS_ACTION_TYPES.CREATE_PATIENT_FAILED, error)
+);
+// End Create Patients Session
+
+// Edit Patient Session
+export type EditPatientStart = ActionWithPayload<PATIENTS_ACTION_TYPES.EDIT_PATIENT_START, PatientType>;
+export type EditPatientSuccess = ActionWithPayload<PATIENTS_ACTION_TYPES.EDIT_PATIENT_SUCCESS, PatientType>;
+export type EditPatientFailed = ActionWithPayload<PATIENTS_ACTION_TYPES.EDIT_PATIENT_FAILED, Error | ServerResponse | string >;
+
+export const editPatientStart = withMatcher(
+    (patient: PatientType): EditPatientStart => createAction(PATIENTS_ACTION_TYPES.EDIT_PATIENT_START, patient)
+);
+export const editPatientSuccess = withMatcher(
+    (patient: PatientType): EditPatientSuccess => createAction(PATIENTS_ACTION_TYPES.EDIT_PATIENT_SUCCESS, patient)
+);
+export const editPatientFailed = withMatcher(
+    (error: Error | ServerResponse | string ): EditPatientFailed => createAction(PATIENTS_ACTION_TYPES.EDIT_PATIENT_FAILED, error)
+);
+// End Edit Patients Session
+
+// Create Patient Session
+export type DeletePatientStart = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_START, string>;
+export type DeletePatientSuccess = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_SUCCESS, string>;
+export type DeletePatientFailed = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_FAILED, Error | ServerResponse | string >;
+
+export const deletePatientStart = withMatcher(
+    (id: string): DeletePatientStart => createAction(PATIENTS_ACTION_TYPES.DELETE_PATIENT_START, id)
+);
+export const deletePatientSuccess = withMatcher(
+    (id: string): DeletePatientSuccess => createAction(PATIENTS_ACTION_TYPES.DELETE_PATIENT_SUCCESS, id)
+);
+export const deletePatientFailed = withMatcher(
+    (error: Error | ServerResponse | string ): DeletePatientFailed => createAction(PATIENTS_ACTION_TYPES.DELETE_PATIENT_FAILED, error)
 );
 // End Create Patients Session

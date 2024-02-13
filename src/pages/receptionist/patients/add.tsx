@@ -23,7 +23,6 @@ function PatientAdd() {
 
     const onSubmit: SubmitHandler<PatientType> = (data): void => {
         const formData = EmptyToNull(data);
-        console.log(formData);
         dispatch(createPatientStart(formData as PatientType));
     };
 
@@ -125,7 +124,7 @@ function PatientAdd() {
                             />
                             <Form.Group as={Row} controlId='gender'>
                                 <Form.Label column sm='4'>
-                                    Genre
+                                    Gender
                                 </Form.Label>
                                 <Col sm='8'>
                                     <Form.Check inline label="Laki-laki" type="radio" value={'Laki-laki'} {...register('gender')} checked/>
