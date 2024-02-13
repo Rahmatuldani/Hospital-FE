@@ -1,7 +1,14 @@
 import { AnyAction } from "redux";
-import { fetchPatientsFailed, fetchPatientsStart, fetchPatientsSuccess } from "./action";
 import { ServerResponse } from "../../config/types";
 import { PatientType } from "./types";
+import { 
+    createPatientFailed, 
+    createPatientStart, 
+    createPatientSuccess, 
+    fetchPatientsFailed, 
+    fetchPatientsStart, 
+    fetchPatientsSuccess 
+} from "./action";
 
 export type PatientsState = {
     readonly patients: PatientType[];
@@ -20,17 +27,22 @@ export function patientReducer(
     action: AnyAction
 ): PatientsState {
     if (
-        fetchPatientsStart.match(action)
+        fetchPatientsStart.match(action) ||
+        createPatientStart.match(action)
     ) {
         return {...state, isLoading: true};
     }
-    if (
-        fetchPatientsSuccess.match(action)
-    ) {
+
+    if (fetchPatientsSuccess.match(action)) {
         return {...state, isLoading: false, patients: action.payload, error: null};
     }
+    if (createPatientSuccess.match(action)) {
+        return {...state, isLoading: false, patients: [...state.patients, action.payload], error: null};
+    }
+
     if (
-        fetchPatientsFailed.match(action)
+        fetchPatientsFailed.match(action) ||
+        createPatientFailed.match(action)
     ) {
         return {...state, isLoading: false, error: action.payload};
     }

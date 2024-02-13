@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Card, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
+import { Card, Col, Container, Dropdown, Form, Row, Spinner } from "react-bootstrap";
 import { FaSort, FaUserInjured } from "react-icons/fa";
 import { PatientType } from "../../../store/patients/types";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { fetchPatientsStart } from "../../../store/patients/action";
-import { selectPatients } from "../../../store/patients/selector";
+import { selectPatients, selectPatientsIsLoading } from "../../../store/patients/selector";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import Alert from "../../../utils/alert";
@@ -16,6 +16,7 @@ import { dateToString } from "../../../utils/convert";
 
 function Patient() {
     const patients: PatientType[] = useSelector(selectPatients);
+    const loading: boolean = useSelector(selectPatientsIsLoading);
     const [filter, setFilter] = useState<string>('');
     const dispatch = useDispatch();
 
@@ -102,15 +103,21 @@ function Patient() {
                         <Form.Control style={{ maxWidth: '400px' }} placeholder="Search" onChange={(e) => setFilter(e.target.value)} />
                     </Card.Header>
                     <Card.Body>
-                        <DataTable
-                            columns={columns}
-                            data={filterPatients}
-                            pagination
-                            sortIcon={<FaSort />}
-                            responsive
-                            striped
-                            highlightOnHover
-                        />
+                        {loading ? (
+                            <div className="d-flex justify-content-center p-4">
+                                <Spinner animation="border" variant="primary" />
+                            </div>
+                        ) : (
+                            <DataTable
+                                columns={columns}
+                                data={filterPatients}
+                                pagination
+                                sortIcon={<FaSort />}
+                                responsive
+                                striped
+                                highlightOnHover
+                            />
+                        )}
                     </Card.Body>
                 </Card>
             </Container>

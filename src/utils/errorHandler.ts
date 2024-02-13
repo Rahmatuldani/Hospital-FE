@@ -12,7 +12,7 @@ function ErrorHandler(error: any): void {
             }
         }
         if (isServerResponse(error)) {
-            Alert({ icon: 'error', title: error.status, text: error.message });
+            Alert({ icon: 'error', title: error.status, text: `${error.message}: ${error.data.error}` });
         }
         if (typeof error === 'string') {
             Alert({ icon: 'error', title: 'Error', text: error });
