@@ -6,7 +6,7 @@ function Receptionist() {
     return (
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
-                <Sidebar items={<SidebarItems />} />
+                <Sidebar items={<SidebarItems />} role="Receptionist"/>
             </div>
             <div id="layoutSidenav_content">
                 <Outlet />

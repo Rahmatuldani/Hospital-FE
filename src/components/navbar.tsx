@@ -13,12 +13,22 @@ import {
     FiLogOut
 } from "react-icons/fi";
 import Profile from '../assets/assets/img/illustrations/profiles/profile-1.png';
+import { UserType } from "../store/users/types";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../store/auth/selector";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/auth/action";
 
 function NavbarComponent() {
-    const currentUser: null = null;
+    const currentUser: UserType | null = useSelector(selectAuth);
+    const dispatch = useDispatch();
 
     function toggleSidebar() {
         document.body.classList.toggle('sidenav-toggled');
+    }
+
+    function logoutHandle() {
+        dispatch(logout());
     }
 
     return (
@@ -127,10 +137,10 @@ function NavbarComponent() {
                         <img className="dropdown-user-img" src={Profile} />
                         <div className="dropdown-user-details">
                             <div className="dropdown-user-details-name">
-                                {currentUser ? 'Current User' : "Testing"}
+                                {currentUser ? currentUser.name : "Testing"}
                             </div>
                             <div className="dropdown-user-details-email">
-                                {currentUser ? 'Current User': "Testing"}
+                                {currentUser ? currentUser.email: "Testing"}
                             </div>
                         </div>
                     </Dropdown.Header>
@@ -141,7 +151,7 @@ function NavbarComponent() {
                         </div>
                         Account
                     </Dropdown.Item>
-                    <Dropdown.Item href="#!" onClick={() => { }}>
+                    <Dropdown.Item href="" onClick={() => logoutHandle()}>
                         <div className="dropdown-item-icon">
                             <FiLogOut />
                         </div>

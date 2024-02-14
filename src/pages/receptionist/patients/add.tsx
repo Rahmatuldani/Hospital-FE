@@ -18,7 +18,7 @@ import React from "react";
 import { ErrorHandler } from "../../../utils/errorHandler";
 
 function PatientAdd() {
-    const { register, handleSubmit, formState: { errors }, control } = useForm<PatientType>();
+    const { handleSubmit, formState: { errors }, control, setValue } = useForm<PatientType>();
     const dispatch = useDispatch();
 
     const onSubmit: SubmitHandler<PatientType> = (data): void => {
@@ -122,16 +122,33 @@ function PatientAdd() {
                                     </Form.Group>
                                 )}
                             />
-                            <Form.Group as={Row} controlId='gender'>
+                            <Controller
+                                name="gender"
+                                control={control}
+                                defaultValue="Laki-laki"
+                                rules={{ required: 'Gender is required' }}
+                                render={({ field }) => (
+                                    <Form.Group as={Row} controlId='gender'>
+                                        <Form.Label column sm='4'>
+                                            Gender
+                                        </Form.Label>
+                                        <Col sm='8'>
+                                            <Form.Check inline label="Laki-laki" type="radio" id="laki-laki" {...field} checked={field.value === 'Laki-laki'} onChange={() => setValue('gender', 'Laki-laki')}/>
+                                            <Form.Check inline label="Perempuan" type="radio" id="perempuan" {...field} checked={field.value === 'Perempuan'} onChange={() => setValue('gender', 'Perempuan')}/>
+                                        </Col>
+                                    </Form.Group>
+                                )}
+                            />
+                            {/* <Form.Group as={Row} controlId='gender'>
                                 <Form.Label column sm='4'>
                                     Gender
                                 </Form.Label>
                                 <Col sm='8'>
-                                    <Form.Check inline label="Laki-laki" type="radio" value={'Laki-laki'} {...register('gender')} checked/>
+                                    <Form.Check inline label="Laki-laki" type="radio" value={'Laki-laki'} {...register('gender')} checked />
                                     <Form.Check inline label="Perempuan" type="radio" value={'Perempuan'} {...register('gender')} />
                                     {errors.gender && <span className="text-danger">{errors.gender.message}</span>}
                                 </Col>
-                            </Form.Group>
+                            </Form.Group> */}
                             <Controller
                                 name="blood"
                                 control={control}

@@ -6,7 +6,7 @@ function AdminLayout() {
     return (
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
-                <Sidebar items={<SidebarItems/>}/>
+                <Sidebar items={<SidebarItems/>} role="Administrator"/>
             </div>
             <div id="layoutSidenav_content">
                 <Outlet />

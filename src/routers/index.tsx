@@ -2,11 +2,18 @@ import { Navigate, Route, createBrowserRouter, createRoutesFromElements, isRoute
 import App from "../App";
 import AdminRouters from "./admin";
 import ReceptionistRouters from "./receptionist";
+import LoginPage from "../pages/login";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../store/auth/selector";
+import { UserType } from "../store/users/types";
 
 function RouteRedirect() {
-    const userRole: string = 'Receptionist';
+    const userRole: UserType | null = useSelector(selectAuth);
 
-    return <Navigate to={`/${userRole.toLowerCase()}`} replace/>;
+    if (!userRole) {
+        return <Navigate to={'/login'} replace/>;
+    }
+    return <Navigate to={`/${String(userRole.role).toLowerCase()}`} replace/>;
 }
 
 function ErrorBoundary() {
@@ -21,11 +28,14 @@ function ErrorBoundary() {
 
 const Routers = createBrowserRouter(
     createRoutesFromElements(
-        <Route path="/" element={<App/>} errorElement={<ErrorBoundary/>}>
-            <Route index element={<RouteRedirect/>}/>
-            {AdminRouters()}
-            {ReceptionistRouters()}
-        </Route>
+        <>
+            <Route path="/" element={<App/>} errorElement={<ErrorBoundary/>}>
+                <Route index element={<RouteRedirect/>}/>
+                {AdminRouters()}
+                {ReceptionistRouters()}
+            </Route>
+            <Route path="/login" element={<LoginPage/>}/>
+        </>
     )
 );
 
