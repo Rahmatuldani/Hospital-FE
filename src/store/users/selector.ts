@@ -8,10 +8,6 @@ export const selectUsers = createSelector(
     [selectUsersReducer],
     (usersSlice) => usersSlice.users
 );
-export const selectUsersPageCount = createSelector(
-    [selectUsersReducer],
-    (usersSlice) => usersSlice.pageCount
-);
 
 export const selectUsersIsLoading = createSelector(
     [selectUsersReducer],

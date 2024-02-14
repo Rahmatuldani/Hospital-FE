@@ -15,6 +15,8 @@ function ErrorHandler(error: any): void {
             if (error.data.error) {
                 Alert({ icon: 'error', title: error.status, text: `${error.message}: ${error.data.error}` });
             }
+            console.log(error.data);
+            
             Alert({ icon: 'error', title: error.status, text: `${error.message}` });
         }
         if (typeof error === 'string') {

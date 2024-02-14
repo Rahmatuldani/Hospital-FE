@@ -1,17 +1,26 @@
 import { all, call, put, takeLatest } from "typed-redux-saga";
 import { USERS_ACTION_TYPES, UserType } from "./types";
-import { FetchOptions, UpdateOptions, createUserFailed, deleteUserFailed, fetchUsersFailed, fetchUsersSuccess, updateUserFailed } from "./action";
+import { 
+    fetchUsersSuccess, 
+    fetchUsersFailed, 
+    createUserSuccess, 
+    createUserFailed, 
+    deleteUserSuccess,
+    deleteUserFailed, 
+    updateUserSuccess,
+    updateUserFailed 
+} from "./action";
 import { isAxiosError } from "../../utils/typeCheck";
 import userApi from "../../api/user";
 import Alert from "../../utils/alert";
 import { ServerResponse } from "../../config/types";
 
-export function* fetchUsersAsync(action?: {type: string, payload: FetchOptions}) {
+export function* fetchUsersAsync(action: {type: string, payload: UserType}) {
     try {
-        const [status, response] = yield* call(userApi.getAllUsers, action?.payload);
+        const [status, response] = yield* call(userApi.getAllUsers, action.payload);
         switch (status) {
             case 200:
-                return yield* put(fetchUsersSuccess({pageCount: response.data.pageCount, users: response.data.users}));
+                return yield* put(fetchUsersSuccess(response.data.users));
         
             default:
                 return yield* put(fetchUsersFailed(response.data.errors));
@@ -34,7 +43,7 @@ export function* createUserAsync(action: { type: string, payload: UserType}) {
         switch (status) {
             case 201:
                 Alert({ title: 'Succes', text: 'Create user success', icon: 'success'});
-                return yield* call(fetchUsersAsync);
+                return yield* put(createUserSuccess(response.data.user));
         
             default:
                 return yield* put(createUserFailed(response.data.errors));
@@ -51,13 +60,13 @@ export function* createUserAsync(action: { type: string, payload: UserType}) {
     }
 }
 
-export function* updateUserAsync(action: { type: string, payload: UpdateOptions }) {
+export function* updateUserAsync(action: { type: string, payload: UserType }) {
     try {
         const [status, response] = yield* call(userApi.updateUser, action.payload);
         switch (status) {
             case 200:
                 Alert({ title: 'Succes', text: 'Update user success', icon: 'success'});
-                return yield* call(fetchUsersAsync);
+                return yield* put(updateUserSuccess(response.data.user));
         
             default:
                 return yield* put(updateUserFailed(response.data.errors));
@@ -80,7 +89,7 @@ export function* deleteUserAsync(action: {type: string, payload: string}) {
         switch (status) {
             case 200:
                 Alert({ title: 'Succes', text: 'Delete user success', icon: 'success'});
-                return yield* call(fetchUsersAsync);
+                return yield* put(deleteUserSuccess(response.data._id));
         
             default:
                 return yield* put(deleteUserFailed(response.data.errors));

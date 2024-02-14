@@ -1,42 +1,29 @@
-import { Button, Card, Col, Container, Dropdown, Form, Pagination, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, OverlayTrigger, Row, Spinner, Tooltip } from "react-bootstrap";
 import { FaUserDoctor } from 'react-icons/fa6';
 import { UserType } from "../../../store/users/types";
 import React from "react";
-import {  FaSort } from "react-icons/fa";
+import { FaSortDown } from "react-icons/fa";
 import useState from "../../../hooks/useState";
-import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import UserDetail from "./detail";
 import { useSelector } from "react-redux";
-import { selectUsers, selectUsersError, selectUsersIsLoading, selectUsersPageCount } from "../../../store/users/selector";
+import { selectUsers, selectUsersError, selectUsersIsLoading } from "../../../store/users/selector";
 import { ErrorHandler } from "../../../utils/errorHandler";
 import { useDispatch } from "react-redux";
 import { deleteUserStart, fetchUsersStart } from "../../../store/users/action";
 import Alert from "../../../utils/alert";
 import UserEdit from "./edit";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 function Users() {
     const users: UserType[] = useSelector(selectUsers);
-    const isLoading: boolean = useSelector(selectUsersIsLoading);
-    const pageCount: number = useSelector(selectUsersPageCount);
+    const loading: boolean = useSelector(selectUsersIsLoading);
+    const [filter, setFilter] = useState<string>('');
     const dispatch = useDispatch();
 
-    const [limit, setLimit] = useState('10');
-    const [search, setSearch] = useState<string>('');
-    const [page, setPage] = useState<number>(1);
-    const pagination: JSX.Element[] = [];
-    for (let i = 1; i < pageCount + 1; i++) {
-        pagination.push(
-            <Pagination.Item key={i} active={page === i} onClick={() => setPage(i)}>{i}</Pagination.Item>
-        );
-    }
-
-    const columns: { key: keyof UserType, label: string }[] = [
-        { key: 'email', label: 'Email' },
-        { key: 'name', label: 'Name' },
-        { key: 'role', label: 'Role' },
-        { key: 'polyclinic', label: 'Polyclinic' },
-        { key: 'phone', label: 'Phone' },
-    ];
+    React.useEffect(() => {
+        dispatch(fetchUsersStart());
+    }, [dispatch]);
 
     function handleDelete(id: string, name: string) {
         Alert({ title: 'Delete user', text: `Are you sure to delete ${name}?`, icon: 'warning', cancelButton: true, confirmText: 'Delete' })
@@ -52,9 +39,50 @@ function Users() {
         ErrorHandler(error);
     }, [error]);
 
-    React.useEffect(() => {
-        dispatch(fetchUsersStart({ page, limit, search }));
-    }, [dispatch, page, limit, search]);
+    const columns: TableColumn<UserType>[] = [
+        {
+            name: 'Email',
+            selector: row => row.email,
+            sortable: true
+        },
+        {
+            name: 'Name',
+            selector: row => row.name,
+            sortable: true
+        },
+        {
+            name: 'Role',
+            selector: row => row.role,
+            sortable: true
+        },
+        {
+            name: 'Polyclinic',
+            selector: row => row.polyclinic ?? '-',
+            sortable: true
+        },
+        {
+            name: 'Action',
+            cell: (row) => (
+                <div className="d-flex gap-1">
+                    <UserDetail user={row} />
+                    <UserEdit user={row} />
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={
+                            <Tooltip id="deleteTooltip">Delete</Tooltip>
+                        }
+                    >
+                        <Button variant="icon" className="btn-transparent-dark btn-datatable" onClick={() => handleDelete(row._id, row.name)}>
+                            <FiTrash2 />
+                        </Button>
+                    </OverlayTrigger>
+                </div>
+            )
+        },
+    ];
+
+    const filterUsers: UserType[] = users.filter((user) => user.email.toLowerCase().includes(filter.toLowerCase()) ||
+        user.name.toLowerCase().includes(filter.toLowerCase()));
 
     return (
         <main>
@@ -75,107 +103,27 @@ function Users() {
                 </Container>
             </header>
             <Container className="mt-n10">
-                <Card className='mb-4'>
-                    <Card.Header>List</Card.Header>
-                    <Card.Body className="d-flex flex-column align-items-center">
-                        <Row className="mb-4" style={{ width: '100%' }}>
-                            <Col>
-                                <Form.Group as={Row} controlId="showData">
-                                    <Form.Label column sm='2'>Show</Form.Label>
-                                    <Col sm='3'>
-                                        <Form.Select aria-label="showData" value={limit} onChange={(e) => setLimit(e.target.value)}>
-                                            <option value='10'>10</option>
-                                            <option value='25'>25</option>
-                                            <option value='50'>50</option>
-                                            <option value='100'>100</option>
-                                        </Form.Select>
-                                    </Col>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Control
-                                    placeholder="Search by email, name, role, or polyclinic"
-                                    aria-label="Search"
-                                    aria-describedby="search"
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </Col>
-                        </Row>
-                        <Table striped bordered hover responsive>
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    {columns.map((column) => (
-                                        <th key={column.key}>{column.label}
-                                            <Button variant="icon" className="btn-transparent btn-datatable ms-1" type="button"><FaSort /></Button>
-                                        </th>
-                                    ))}
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>No</th>
-                                    {columns.map((column) => (
-                                        <th key={column.key}>{column.label}</th>
-                                    ))}
-                                    <th>Action</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                {isLoading ? (
-                                    <tr>
-                                        <td colSpan={columns.length + 2} className="text-center">
-                                            <Spinner animation="border" variant="primary" />
-                                        </td>
-                                    </tr>
-                                ) : users.length <= 0 ? (
-                                    <tr>
-                                        <td colSpan={columns.length + 2} className="text-center">
-                                            Data Not Found
-                                        </td>
-                                    </tr>
-                                ) : users.map((row, i) => (
-                                    <tr key={i}>
-                                        <td>{i+1}</td>
-                                        {columns.map((column) => (
-                                            <td key={column.key}>{row[column.key] ?? '-'}</td>
-                                        ))}
-                                        <td>
-                                            <Dropdown className="no-caret dropdown-notifications">
-                                                <Dropdown.Toggle
-                                                    variant="icon"
-                                                    className="btn-transparent-dark btn-datatable"
-                                                    id="notification-dropdown"
-                                                    aria-haspopup="true"
-                                                >
-                                                    <FiMoreVertical />
-                                                </Dropdown.Toggle>
-
-                                                <Dropdown.Menu className='py-2' style={{ minWidth: '150px' }}>
-                                                    <UserDetail user={row} />
-                                                    <UserEdit user={row}/>
-                                                    <Dropdown.Item href="#!" onClick={() => handleDelete(row._id, row.name)}>
-                                                        <div className="dropdown-item-icon">
-                                                            <FiTrash2 />
-                                                        </div>
-                                                        Delete
-                                                    </Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown>
-                                        </td>
-                                    </tr>
-                                ))
-                                }
-                            </tbody>
-                        </Table>
-                        <Pagination className="m-2">
-                            <Pagination.First disabled={page === 1} onClick={() => setPage(1)} />
-                            <Pagination.Prev disabled={page === 1} onClick={() => setPage(page - 1)} />
-                            {pagination}
-                            <Pagination.Next disabled={page === pageCount} onClick={() => setPage(page + 1)} />
-                            <Pagination.Last disabled={page === pageCount} onClick={() => setPage(pageCount)} />
-                        </Pagination>
+                <Card className='mb-4 card-header-actions'>
+                    <Card.Header>
+                        List
+                        <Form.Control style={{ maxWidth: '400px' }} placeholder="Search" onChange={(e) => setFilter(e.target.value)} />
+                    </Card.Header>
+                    <Card.Body>
+                        {loading ? (
+                            <div className="d-flex justify-content-center p-4">
+                                <Spinner animation="border" variant="primary" />
+                            </div>
+                        ) : (
+                            <DataTable
+                                columns={columns}
+                                data={filterUsers}
+                                pagination
+                                sortIcon={<FaSortDown/>}
+                                responsive
+                                striped
+                                highlightOnHover
+                            />
+                        )}
                     </Card.Body>
                 </Card>
             </Container>

@@ -8,23 +8,22 @@ import {
     Row
 } from "react-bootstrap";
 import { FaUserDoctor } from 'react-icons/fa6';
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Polyclinic, UserRole, UserType } from "../../../store/users/types";
 import { useDispatch } from "react-redux";
 import { createUserStart } from "../../../store/users/action";
 import { useSelector } from "react-redux";
 import { selectUsersError } from "../../../store/users/selector";
 import { ErrorHandler } from "../../../utils/errorHandler";
+import { EmptyToNull } from "../../../utils/convert";
 
 function UserAdd() {
-    const { register, handleSubmit, formState: { errors } } = useForm<UserType>();
+    const { control, handleSubmit, formState: { errors } } = useForm<UserType>();
     const dispatch = useDispatch();
 
     const onSubmit: SubmitHandler<UserType> = (data): void => {
-        if (data.polyclinic === '') {
-            delete data.polyclinic;
-        }
-        dispatch(createUserStart(data));
+        const formData = EmptyToNull(data);
+        dispatch(createUserStart(formData as UserType));
     };
 
     const error = useSelector(selectUsersError);
@@ -56,44 +55,83 @@ function UserAdd() {
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Card.Body>
                             <Row className="mb-3">
-                                <Form.Group as={Col} controlId="formEmail">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control type="email" placeholder="Input Email" {...register('email', { required: 'Email is required' })} />
-                                    {errors.email && <span className="text-danger">{errors.email.message}</span>}
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formName">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control placeholder="Input Name" {...register('name', { required: 'Name is required' })} />
-                                    {errors.name && <span className="text-danger">{errors.name.message}</span>}
-                                </Form.Group>
+                                <Controller
+                                    name="email"
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{ required: 'Email is required' }}
+                                    render={({ field }) => (
+                                        <Form.Group as={Col} controlId="formEmail">
+                                            <Form.Label>Email</Form.Label>
+                                            <Form.Control type="email" placeholder="Input Email" {...field} />
+                                            {errors.email && <span className="text-danger">{errors.email.message}</span>}
+                                        </Form.Group>
+                                    )}
+                                />
+                                <Controller
+                                    name="name"
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{ required: 'Name is required' }}
+                                    render={({ field }) => (
+                                        <Form.Group as={Col} controlId="formName">
+                                            <Form.Label>Name</Form.Label>
+                                            <Form.Control placeholder="Input Name" {...field} />
+                                            {errors.name && <span className="text-danger">{errors.name.message}</span>}
+                                        </Form.Group>
+                                    )}
+                                />
                             </Row>
                             <Row className="mb-3">
-                                <Form.Group as={Col} controlId="formRole">
-                                    <Form.Label>Role</Form.Label>
-                                    <Form.Select aria-label="role" {...register('role', { required: 'Role is required' })}>
-                                        <option value={''}>Select Role</option>
-                                        {UserRole.map((role) => (
-                                            <option key={role} value={role}>{role}</option>
-                                        ))}
-                                    </Form.Select>
-                                    {errors.role && <span className="text-danger">{errors.role.message}</span>}
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="formUid">
-                                    <Form.Label>Polyclinic</Form.Label>
-                                    <Form.Select aria-label="polyclinic" {...register('polyclinic')}>
-                                        <option value={''}>Select Polyclinic</option>
-                                        {Polyclinic.map((poly) => (
-                                            <option key={poly} value={poly}>{poly}</option>
-                                        ))}
-                                    </Form.Select>
-                                </Form.Group>
+                                <Controller
+                                    name="role"
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{ required: 'Role is required' }}
+                                    render={({ field }) => (
+                                        <Form.Group as={Col} controlId="formRole">
+                                            <Form.Label>Role</Form.Label>
+                                            <Form.Select aria-label="role" {...field}>
+                                                <option value={''}>Select Role</option>
+                                                {UserRole.map((role) => (
+                                                    <option key={role} value={role}>{role}</option>
+                                                ))}
+                                            </Form.Select>
+                                            {errors.role && <span className="text-danger">{errors.role.message}</span>}
+                                        </Form.Group>
+                                    )}
+                                />
+                                <Controller
+                                    name="polyclinic"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <Form.Group as={Col} controlId="formPolyclinic">
+                                            <Form.Label>Polyclinic</Form.Label>
+                                            <Form.Select aria-label="polyclinic" {...field}>
+                                                <option value={''}>Select Polyclinic</option>
+                                                {Polyclinic.map((poly) => (
+                                                    <option key={poly} value={poly}>{poly}</option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+                                    )}
+                                />
                             </Row>
                             <Row className="mb-3">
-                                <Form.Group as={Col} controlId="formPhone">
-                                    <Form.Label>Phone</Form.Label>
-                                    <Form.Control placeholder="Input Phone" {...register('phone', { required: 'Phone is required' })} />
-                                    {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
-                                </Form.Group>
+                                <Controller
+                                    name="phone"
+                                    control={control}
+                                    defaultValue=""
+                                    rules={{ required: 'Phone is required' }}
+                                    render={({ field }) => (
+                                        <Form.Group as={Col} controlId="formPhone">
+                                            <Form.Label>Phone</Form.Label>
+                                            <Form.Control placeholder="Input Phone" {...field} />
+                                            {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                                        </Form.Group>
+                                    )}
+                                />
                             </Row>
                         </Card.Body>
                         <Card.Footer className="d-flex gap-2 justify-content-end">

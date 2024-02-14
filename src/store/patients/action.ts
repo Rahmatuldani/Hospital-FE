@@ -50,7 +50,7 @@ export const editPatientFailed = withMatcher(
 );
 // End Edit Patients Session
 
-// Create Patient Session
+// Delete Patient Session
 export type DeletePatientStart = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_START, string>;
 export type DeletePatientSuccess = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_SUCCESS, string>;
 export type DeletePatientFailed = ActionWithPayload<PATIENTS_ACTION_TYPES.DELETE_PATIENT_FAILED, Error | ServerResponse | string >;
@@ -64,4 +64,4 @@ export const deletePatientSuccess = withMatcher(
 export const deletePatientFailed = withMatcher(
     (error: Error | ServerResponse | string ): DeletePatientFailed => createAction(PATIENTS_ACTION_TYPES.DELETE_PATIENT_FAILED, error)
 );
-// End Create Patients Session
+// End Delete Patients Session

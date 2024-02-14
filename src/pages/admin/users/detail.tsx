@@ -1,4 +1,4 @@
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import useState from "../../../hooks/useState";
 import { FaClipboardList } from "react-icons/fa";
 import { UserType } from "../../../store/users/types";
@@ -8,17 +8,20 @@ interface DetailProps {
 }
 
 function UserDetail({ user }: DetailProps) {
-    const [show, setShow] = useState(false);
-
+    const [show, setShow] = useState<boolean>(false);
 
     return (
         <>
-            <button className="dropdown-item" onClick={() => setShow(true)}>
-                <div className='dropdown-item-icon'>
+            <OverlayTrigger
+                placement="top"
+                overlay={
+                    <Tooltip id="detailTooltip">Detail</Tooltip>
+                }
+            >
+                <Button variant="icon" className="btn-transparent-dark btn-datatable" onClick={() => setShow(true)}>
                     <FaClipboardList />
-                </div>
-                Detail
-            </button>
+                </Button>
+            </OverlayTrigger>
 
             <Modal show={show} onHide={() => setShow(false)}>
                 <Modal.Header closeButton>User Detail</Modal.Header>

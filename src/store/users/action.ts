@@ -1,17 +1,7 @@
-import { ActionWithPayload, createAction, withMatcher } from "../../utils/reducer";
+import { Action, ActionWithPayload, createAction, withMatcher } from "../../utils/reducer";
 import { USERS_ACTION_TYPES, UserType } from "./types";
 import { ServerResponse } from "../../config/types";
 
-type FetchUsers = {
-    users: UserType[];
-    pageCount: number;
-}
-
-export type FetchOptions = {
-    search?: string,
-    page?: number,
-    limit?: string,
-}
 
 export type UpdateOptions = {
     id: string,
@@ -19,15 +9,15 @@ export type UpdateOptions = {
 }
 
 // Fetch Session
-export type FetchUsersStart = ActionWithPayload<USERS_ACTION_TYPES.FETCH_USERS_START, FetchOptions>;
-export type FetchUsersSuccess = ActionWithPayload<USERS_ACTION_TYPES.FETCH_USERS_SUCCESS, FetchUsers>;
+export type FetchUsersStart = Action<USERS_ACTION_TYPES.FETCH_USERS_START>;
+export type FetchUsersSuccess = ActionWithPayload<USERS_ACTION_TYPES.FETCH_USERS_SUCCESS, UserType[]>;
 export type FetchUsersFailed = ActionWithPayload<USERS_ACTION_TYPES.FETCH_USERS_FAILED, Error | ServerResponse | string >;
 
 export const fetchUsersStart = withMatcher(
-    (options: FetchOptions): FetchUsersStart => createAction(USERS_ACTION_TYPES.FETCH_USERS_START, options)
+    (): FetchUsersStart => createAction(USERS_ACTION_TYPES.FETCH_USERS_START)
 );
 export const fetchUsersSuccess = withMatcher(
-    (result: FetchUsers): FetchUsersSuccess => createAction(USERS_ACTION_TYPES.FETCH_USERS_SUCCESS, result)
+    (users: UserType[]): FetchUsersSuccess => createAction(USERS_ACTION_TYPES.FETCH_USERS_SUCCESS, users)
 );
 export const fetchUsersFailed = withMatcher(
     (error: Error | ServerResponse | string ): FetchUsersFailed => createAction(USERS_ACTION_TYPES.FETCH_USERS_FAILED, error)
@@ -36,10 +26,14 @@ export const fetchUsersFailed = withMatcher(
 
 // Create Section
 export type CreateUsersStart = ActionWithPayload<USERS_ACTION_TYPES.CREATE_USER_START, UserType>;
+export type CreateUsersSuccess = ActionWithPayload<USERS_ACTION_TYPES.CREATE_USER_SUCCESS, UserType>;
 export type CreateUsersFailed = ActionWithPayload<USERS_ACTION_TYPES.CREATE_USER_FAILED, Error | ServerResponse | string >;
 
 export const createUserStart = withMatcher(
     (user: UserType): CreateUsersStart => createAction(USERS_ACTION_TYPES.CREATE_USER_START, user)
+);
+export const createUserSuccess = withMatcher(
+    (user: UserType): CreateUsersSuccess => createAction(USERS_ACTION_TYPES.CREATE_USER_SUCCESS, user)
 );
 export const createUserFailed = withMatcher(
     (error: Error | ServerResponse | string ): CreateUsersFailed => createAction(USERS_ACTION_TYPES.CREATE_USER_FAILED, error)
@@ -47,11 +41,15 @@ export const createUserFailed = withMatcher(
 // End Create Section
 
 // Update Section
-export type UpdateUserStart = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_START, UpdateOptions>;
+export type UpdateUserStart = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_START, UserType>;
+export type UpdateUserSuccess = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_SUCCESS, UserType>;
 export type UpdateUserFailed = ActionWithPayload<USERS_ACTION_TYPES.UPDATE_USER_FAILED, Error | ServerResponse | string >;
 
 export const updateUserStart = withMatcher(
-    (data: UpdateOptions): UpdateUserStart => createAction(USERS_ACTION_TYPES.UPDATE_USER_START, data)
+    (user: UserType): UpdateUserStart => createAction(USERS_ACTION_TYPES.UPDATE_USER_START, user)
+);
+export const updateUserSuccess = withMatcher(
+    (user: UserType): UpdateUserSuccess => createAction(USERS_ACTION_TYPES.UPDATE_USER_SUCCESS, user)
 );
 export const updateUserFailed = withMatcher(
     (error: Error | ServerResponse | string ): UpdateUserFailed => createAction(USERS_ACTION_TYPES.UPDATE_USER_FAILED, error)
@@ -60,10 +58,14 @@ export const updateUserFailed = withMatcher(
 
 // Delete Section
 export type DeleteUserStart = ActionWithPayload<USERS_ACTION_TYPES.DELETE_USER_START, string>;
+export type DeleteUserSuccess = ActionWithPayload<USERS_ACTION_TYPES.DELETE_USER_SUCCESS, string>;
 export type DeleteUserFailed = ActionWithPayload<USERS_ACTION_TYPES.DELETE_USER_FAILED, Error | ServerResponse | string >;
 
 export const deleteUserStart = withMatcher(
     (id: string): DeleteUserStart => createAction(USERS_ACTION_TYPES.DELETE_USER_START, id)
+);
+export const deleteUserSuccess = withMatcher(
+    (id: string): DeleteUserSuccess => createAction(USERS_ACTION_TYPES.DELETE_USER_SUCCESS, id)
 );
 export const deleteUserFailed = withMatcher(
     (error: Error | ServerResponse | string ): DeleteUserFailed => createAction(USERS_ACTION_TYPES.DELETE_USER_FAILED, error)

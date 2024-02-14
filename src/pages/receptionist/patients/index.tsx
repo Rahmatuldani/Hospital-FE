@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Button, Card, Col, Container, Form, OverlayTrigger, Row, Spinner, Tooltip } from "react-bootstrap";
 import { FaSortDown, FaUserInjured } from "react-icons/fa";
 import { PatientType } from "../../../store/patients/types";

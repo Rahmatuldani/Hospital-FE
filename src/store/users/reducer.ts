@@ -3,26 +3,27 @@ import { UserType } from "./types";
 import { 
     createUserFailed, 
     createUserStart, 
+    createUserSuccess, 
     deleteUserFailed, 
     deleteUserStart, 
+    deleteUserSuccess, 
     fetchUsersFailed, 
     fetchUsersStart, 
     fetchUsersSuccess, 
     updateUserFailed, 
-    updateUserStart
+    updateUserStart,
+    updateUserSuccess
 } from "./action";
 import { ServerResponse } from "../../config/types";
 
 export type UsersState = {
     readonly users: UserType[];
-    readonly pageCount: number;
     readonly isLoading: boolean;
     readonly error: Error | ServerResponse | string | null;
 }
 
 export const USERS_INITIAL_STATE: UsersState = {
     users: [],
-    pageCount: 1,
     isLoading: false,
     error: null
 };
@@ -39,11 +40,27 @@ export function usersReducer(
     ) {
         return {...state, isLoading: true};
     }
-    if (
-        fetchUsersSuccess.match(action)
-    ) {
-        return {...state, isLoading: false, users: action.payload.users, pageCount: action.payload.pageCount, error: null};
+
+    if (fetchUsersSuccess.match(action)) {
+        return {...state, isLoading: false, users: action.payload, error: null};
     }
+    if(createUserSuccess.match(action)) {
+        return {...state, isLoading: false, users: [...state.users, action.payload], error: null};
+    }
+    if (updateUserSuccess.match(action)) {
+        const updateUsers = state.users.map((user) => {
+            if (user._id === action.payload._id) {
+                return action.payload;
+            }
+            return user;
+        });
+        return {...state, isLoading: false, users: updateUsers, error: null};
+    }
+    if (deleteUserSuccess.match(action)) {
+        const newUsers = state.users.filter(user => user._id !== action.payload);
+        return {...state, isLoading: false, users: newUsers, error: null};
+    }
+
     if (
         fetchUsersFailed.match(action) ||
         createUserFailed.match(action) ||
