@@ -1,8 +1,11 @@
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { FaArrowTrendUp, FaDollarSign } from "react-icons/fa6";
+import { FaUserInjured } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+    const navigate = useNavigate();
+
     return (
         <main>
             <header className="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
@@ -24,35 +27,25 @@ function Dashboard() {
             <Container className="mt-n5">
                 <Row className="justify-content-center">
                     <Col xl="3" md="6" className="mb-4">
-                        <Card className="border-top-0 border-bottom-0 border-right-0 border-left-lg border-primary h-100 lift">
+                        <Card className="border-top-0 border-bottom-0 border-right-0 border-left-lg border-primary h-60 lift" onClick={() => navigate('/receptionist/patients')}>
                             <Card.Body>
                                 <div className="d-flex align-items-center">
                                     <div className="flex-grow-1">
-                                        <div className="small font-weight-bold text-primary mb-1">Earnings (montly)</div>
-                                        <div className="h5">$4,390</div>
-                                        <div className="text-xs font-weight-bold text-success d-inline-flex align-items-center">
-                                            <FaArrowTrendUp/>
-                                            12%
-                                        </div>
+                                        <div className="small font-weight-bold text-primary mb-1">Pasien Lama</div>
                                     </div>
-                                    <div className="ml-2"><FaDollarSign size={32} className="text-gray-200"/></div>
+                                    <div className="ml-2"><FaUserInjured size={32} className="text-gray-200"/></div>
                                 </div>
                             </Card.Body>
                         </Card>
                     </Col>
                     <Col xl="3" md="6" className="mb-4">
-                        <Card className="border-top-0 border-bottom-0 border-right-0 border-left-lg border-primary h-100 lift">
+                        <Card className="border-top-0 border-bottom-0 border-right-0 border-left-lg border-primary h-60 lift" onClick={() => navigate('/receptionist/patients/add')}>
                             <Card.Body>
                                 <div className="d-flex align-items-center">
                                     <div className="flex-grow-1">
-                                        <div className="small font-weight-bold text-primary mb-1">Earnings (montly)</div>
-                                        <div className="h5">$4,390</div>
-                                        <div className="text-xs font-weight-bold text-success d-inline-flex align-items-center">
-                                            <FaArrowTrendUp/>
-                                            12%
-                                        </div>
+                                        <div className="small font-weight-bold text-primary mb-1">Pasien Baru</div>
                                     </div>
-                                    <div className="ml-2"><FaDollarSign size={32} className="text-gray-200"/></div>
+                                    <div className="ml-2"><FaUserInjured size={32} className="text-gray-200"/></div>
                                 </div>
                             </Card.Body>
                         </Card>
